@@ -77,9 +77,21 @@ io.on("connection", (socket) => {
   });
 
   socket.on("checkoutOrder", async (message) => {
-    const allUserOrders = await utils.checkoutOrder(sessionId);
+    let msg = "";
+    const allUserOrders = await utils.orderHistory(sessionId);
+    if (allUserOrders.length === 0) {
+      msg = " No order to place. Press 1 to place a new order";
+    } else {
+      msg = "Order placed.";
+    }
 
-    socket.emit("checkout", utils.formatMessage("Chatbot", allUserOrders));
+    socket.emit("checkout", utils.formatMessage("Chatbot", msg));
+  });
+
+  socket.on("orderHistory", async (message) => {
+    const allUserOrders = await utils.orderHistory(sessionId);
+
+    socket.emit("orderHistory", utils.formatMessage("Chatbot", allUserOrders));
   });
 
   socket.on("disconnect", () => {
@@ -94,8 +106,8 @@ io.on("connection", (socket) => {
 app.use(function (error, req, res, next) {
   const errStatusCode = error.status || 500;
   const errMessage = error.message || "something broke";
-  console.log(errMessage);
-  //   console.log(error);
+  // console.log(errMessage);
+  console.log(error);
   res.status(errStatusCode).json({ success: false, message: errMessage });
 });
 

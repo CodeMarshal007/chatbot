@@ -89,13 +89,13 @@ async function getOrderInfo(orderid) {
   }
 }
 
-async function checkoutOrder(sessionid) {
+async function orderHistory(sessionid) {
   const sessionId = sessionid;
 
   const allUserOrders = await OrderModel.find({ orderedBy: sessionId });
   if (allUserOrders.length === 0) {
     console.log("You haven't placed any orders.");
-    return;
+    return [];
   }
 
   const orders = [];
@@ -114,5 +114,5 @@ module.exports = {
   getMenu,
   findOrderById,
   getOrderInfo,
-  checkoutOrder,
+  orderHistory,
 };

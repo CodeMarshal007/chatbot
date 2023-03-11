@@ -23,7 +23,13 @@ socket.on("orderPlaced", (serverMessage) => {
 });
 
 socket.on("checkout", (serverMessage) => {
-  checkoutOrder(serverMessage);
+  simpleMassage(serverMessage);
+
+  chatScreen.scrollTop = chatScreen.scrollHeight;
+});
+
+socket.on("orderHistory", (serverMessage) => {
+  orderHistory(serverMessage);
 
   chatScreen.scrollTop = chatScreen.scrollHeight;
 });
@@ -92,7 +98,7 @@ function outputMessage(serverMessage) {
   <p class="meta"> ${serverMessage.user} <span>${serverMessage.time}</span></p>
 
   <p class="text">
-  Your order has been placed, order summary: </br>
+  Added to cart: </br>
   Ordered: ${serverMessage.msg.orderedItem}  </br>
   Price: ${serverMessage.msg.orderedPrice}</br>
 Ordered on: ${serverMessage.msg.orderedAT}.
@@ -130,7 +136,7 @@ function showMenu(serverMessage) {
   messageList.appendChild(newMessageListItem);
 }
 
-function checkoutOrder(serverMessage) {
+function orderHistory(serverMessage) {
   const messageList = document.querySelector("#message-list");
 
   const newMessageListItem = document.createElement("li");
@@ -148,11 +154,26 @@ function checkoutOrder(serverMessage) {
   newMessageListItem.innerHTML = `
     <div class="message">
       <p class="meta">${serverMessage.user} <span>${serverMessage.time}</span></p>
-      <p>order placed</p>
+      <p>Order history</p>
       <p class="text">
          ${menuItems}</br>
          total: ₦${total}
       </p>
+    </div>`;
+
+  messageList.appendChild(newMessageListItem);
+}
+
+function simpleMassage(serverMessage) {
+  const messageList = document.querySelector("#message-list");
+
+  const newMessageListItem = document.createElement("li");
+
+  newMessageListItem.innerHTML = `
+    <div class="message">
+      <p class="meta">${serverMessage.user} <span>${serverMessage.time}</span></p>
+      <p>${serverMessage.msg}</p>
+     
     </div>`;
 
   messageList.appendChild(newMessageListItem);
