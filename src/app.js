@@ -106,8 +106,8 @@ io.on("connection", (socket) => {
 app.use(function (error, req, res, next) {
   const errStatusCode = error.status || 500;
   const errMessage = error.message || "something broke";
-  // console.log(errMessage);
-  console.log(error);
+  console.log(errMessage);
+
   res.status(errStatusCode).json({ success: false, message: errMessage });
 });
 

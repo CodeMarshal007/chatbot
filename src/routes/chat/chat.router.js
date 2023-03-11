@@ -5,7 +5,4 @@ const chatRouter = express.Router();
 
 chatRouter.get("/", chatController.startChat);
 
-// chatRouter.post("/", chatController.customerOption);
-
-// chatRouter.post("/", chatController.newOrder);
 module.exports = chatRouter;
