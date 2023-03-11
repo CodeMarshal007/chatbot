@@ -23,29 +23,9 @@ const MenuSchema = new Schema(
   },
   {
     timestamps: true,
-    // _id: false, // disable default _id field
   }
 );
 
-// MenuSchema.set("toJSON", {
-//   getters: true,
-//   virtuals: false,
-//   transform: (doc, ret, options) => {
-//     delete ret.__v;
-//     ret.id = ret._id; // set id to _id value
-//     delete ret._id; // remove _id field from result
-//   },
-// });
-
-// MenuSchema.set("toObject", {
-//   getters: true,
-//   virtuals: false,
-//   transform: (doc, ret, options) => {
-//     delete ret.__v;
-//     ret.id = ret._id; // set id to _id value
-//     delete ret._id; // remove _id field from result
-//   },
-// });
 MenuSchema.plugin(uniqueValidator);
 
 MenuSchema.pre("save", async function (next) {

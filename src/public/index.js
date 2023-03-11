@@ -10,13 +10,20 @@ socket.on("welcome", (serverMessage) => {
   chatScreen.scrollTop = chatScreen.scrollHeight;
 });
 
+socket.on("menu", (serverMessage) => {
+  showMenu(serverMessage);
+
+  chatScreen.scrollTop = chatScreen.scrollHeight;
+});
+
 socket.on("orderPlaced", (serverMessage) => {
   outputMessage(serverMessage);
 
   chatScreen.scrollTop = chatScreen.scrollHeight;
 });
-socket.on("menu", (serverMessage) => {
-  showMenu(serverMessage);
+
+socket.on("checkout", (serverMessage) => {
+  checkoutOrder(serverMessage);
 
   chatScreen.scrollTop = chatScreen.scrollHeight;
 });
@@ -25,6 +32,7 @@ socket.on("menu", (serverMessage) => {
 chatForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const message = e.target.elements.message.value;
+
   if (message === "1") {
     socket.emit("getMenu", "1");
   } else if (
@@ -34,7 +42,6 @@ chatForm.addEventListener("submit", (e) => {
     message === "103" ||
     message === "104"
   ) {
-    console.log(message);
     socket.emit("placeOrder", message);
   } else if (message === "99") {
     socket.emit("checkoutOrder", message);
@@ -101,7 +108,6 @@ function showMenu(serverMessage) {
 
   const newMessageListItem = document.createElement("li");
 
-  console.log(serverMessage.user);
   const menu = [];
   serverMessage.msg.forEach((item) =>
     menu.push(
@@ -120,6 +126,34 @@ function showMenu(serverMessage) {
   </p>
 
 </div>`;
+
+  messageList.appendChild(newMessageListItem);
+}
+
+function checkoutOrder(serverMessage) {
+  const messageList = document.querySelector("#message-list");
+
+  const newMessageListItem = document.createElement("li");
+
+  const menu = [];
+  let total = 0;
+
+  serverMessage.msg.forEach((item) => {
+    menu.push(item.id + "  " + item.name + ": " + " ₦" + item.price);
+    total += parseFloat(item.price);
+  });
+
+  const menuItems = menu.map((menuItem) => `<br>${menuItem}`).join("");
+
+  newMessageListItem.innerHTML = `
+    <div class="message">
+      <p class="meta">${serverMessage.user} <span>${serverMessage.time}</span></p>
+      <p>order placed</p>
+      <p class="text">
+         ${menuItems}</br>
+         total: ₦${total}
+      </p>
+    </div>`;
 
   messageList.appendChild(newMessageListItem);
 }

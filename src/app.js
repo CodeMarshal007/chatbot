@@ -76,7 +76,11 @@ io.on("connection", (socket) => {
     socket.emit("orderPlaced", utils.formatMessage("Chatbot", message));
   });
 
-  //   socket.on("chatMessage", );
+  socket.on("checkoutOrder", async (message) => {
+    const allUserOrders = await utils.checkoutOrder(sessionId);
+
+    socket.emit("checkout", utils.formatMessage("Chatbot", allUserOrders));
+  });
 
   socket.on("disconnect", () => {
     io.emit(

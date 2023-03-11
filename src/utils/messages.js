@@ -89,6 +89,24 @@ async function getOrderInfo(orderid) {
   }
 }
 
+async function checkoutOrder(sessionid) {
+  const sessionId = sessionid;
+
+  const allUserOrders = await OrderModel.find({ orderedBy: sessionId });
+  if (allUserOrders.length === 0) {
+    console.log("You haven't placed any orders.");
+    return;
+  }
+
+  const orders = [];
+  for (const order of allUserOrders) {
+    const orderInfo = await MenuModel.findOne({ id: order.orderedItem });
+    orders.push(orderInfo);
+  }
+
+  return Promise.all(orders);
+}
+
 module.exports = {
   formatMessage,
   welcomeCustomer,
@@ -96,12 +114,5 @@ module.exports = {
   getMenu,
   findOrderById,
   getOrderInfo,
+  checkoutOrder,
 };
-
-// place {
-//   _id: new ObjectId("640c867dce7290a9b2ed92f9"),
-//   orderedItem: 103,
-//   orderedBy: 'Y2TSbp0AtxJR_P54ShHnpzLUQ-PwfKEf',
-//   orderedAT: 'Saturday, March 11, 2023 2:47 PM',
-//   __v: 0
-// }
