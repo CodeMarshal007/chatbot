@@ -1,0 +1,16 @@
+<%- include("header") -%>
+<div class="chat-screen">
+  <div class="chat-box">
+    <ul id="message-list"></ul>
+
+    <form id="chat-form" action="/" method="post">
+      <input id="message-input" type="text" name="message" />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="index.js"></script>
+
+<%- include("footer") -%>

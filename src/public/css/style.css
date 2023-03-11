@@ -1,0 +1,8 @@
+ .chat-screen{
+    width: 70%;
+    height: 30rem;
+    margin: auto;
+    border: 1px solid red;
+    overflow: scroll;
+    text-overflow: ellipsis;
+ }
