@@ -7,7 +7,6 @@ const MenuSchema = new Schema(
   {
     id: {
       type: Number,
-      // required: [true, "id cannot be blank"],
     },
     name: {
       type: String,

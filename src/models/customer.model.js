@@ -15,6 +15,7 @@ const CustomerSchema = new Schema(
       default: "customer",
     },
     orders: [
+      // cart
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Orders",

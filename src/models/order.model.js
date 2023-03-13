@@ -1,18 +1,16 @@
 const mongoose = require("mongoose");
-var moment = require("moment");
+const moment = require("moment");
 
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 const OrderSchema = new Schema({
   id: ObjectId,
-
   orderedItem: {
-    type: Number,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "Menu",
-    localField: "orderedItem",
-    foreignField: "id",
   },
+
   orderedBy: {
     type: String,
     ref: "Customer",

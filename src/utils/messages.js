@@ -1,8 +1,10 @@
 const CustomerModel = require("../models/customer.model");
 const OrderModel = require("../models/order.model");
 const MenuModel = require("../models/menu.model");
+const HistoryModel = require("../models/orderHistory.model");
 
 const moment = require("moment");
+const { checkout } = require("../routes/chat/chat.router");
 
 function formatMessage(user, msg) {
   return {
@@ -18,6 +20,16 @@ function welcomeCustomer() {
     msg: "Hi welcome to BigBite!</br > Select 1 to place an order</br > Select 99 to checkout order</br > Select 98 to see order history</br >Select 97 to see current order</br > Select 0 to cancel order</br >",
     time: moment().format("h:mm a"),
   };
+}
+
+async function getMenu() {
+  try {
+    const menu = await MenuModel.find();
+    if (!menu.length > 0) {
+      console.log("Menu is empty");
+    }
+    return menu;
+  } catch (error) {}
 }
 
 async function newOrder(sessionId, customerOption) {
@@ -37,53 +49,76 @@ async function newOrder(sessionId, customerOption) {
     }
 
     const newOrder = await OrderModel.create({
-      orderedItem: foundMenuItemId.id,
+      orderedItem: foundMenuItemId._id.toString(),
+      orderId: menuItemId,
       orderedBy: foundCustomer.userId,
     });
-
     foundCustomer.orders = foundCustomer.orders.concat(newOrder._id);
 
     await foundCustomer.save();
 
-    return {
-      newOrder,
-    };
+    return newOrder;
   } catch (error) {
     throw new Error(error.message);
   }
-}
-
-async function getMenu() {
-  try {
-    const menu = await MenuModel.find();
-    if (!menu.length > 0) {
-      console.log("Menu is empty");
-    }
-    return menu;
-  } catch (error) {}
 }
 
 async function findOrderById(sessionid, orderid) {
   try {
-    const orderId = orderid;
+    const orderId = orderid.toString();
     const sessionId = sessionid;
-    const order = await OrderModel.findOne({ orderedItem: orderId })
-      .where("orderedBy")
-      .equals(sessionId);
 
-    return order;
+    const orderDetails = await MenuModel.findById(orderId);
+
+    return orderDetails;
   } catch (error) {
     throw new Error(error.message);
   }
 }
 
-async function getOrderInfo(orderid) {
+async function checkoutOrder(customerId) {
   try {
-    const orderId = orderid;
+    const foundCustomer = await CustomerModel.findOne({ userId: customerId });
 
-    const orderDetails = await MenuModel.findOne({ id: orderId });
+    if (!foundCustomer) {
+      throw new Error("Customer not found");
+    }
 
-    return orderDetails;
+    const customerOrders = foundCustomer.orders;
+    if (customerOrders.length === 0) {
+      console.log("You haven't placed any orders.");
+      return [];
+    }
+
+    const populatedOrders = await OrderModel.find({
+      _id: { $in: customerOrders },
+    }).populate("orderedItem");
+
+    const ordersData = populatedOrders.map((order) => {
+      return {
+        id: order.orderedItem.id,
+        name: order.orderedItem.name,
+        price: order.orderedItem.price,
+        orderDate: order.orderedAT,
+      };
+    });
+
+    const customerHistory = await HistoryModel.findOne({ customerId });
+
+    if (!customerHistory) {
+      const newHistory = new HistoryModel({
+        customerId,
+        orders: ordersData,
+      });
+      await newHistory.save();
+    } else {
+      const newOrdersData = ordersData.map((order) => order);
+      customerHistory.orders.push(newOrdersData);
+      await customerHistory.save();
+    }
+
+    customerOrders.splice(0, customerOrders.length);
+    await foundCustomer.save();
   } catch (error) {
     throw new Error(error.message);
   }
@@ -92,19 +127,15 @@ async function getOrderInfo(orderid) {
 async function orderHistory(sessionid) {
   const sessionId = sessionid;
 
-  const allUserOrders = await OrderModel.find({ orderedBy: sessionId });
-  if (allUserOrders.length === 0) {
-    console.log("You haven't placed any orders.");
+  const foundCustomer = await HistoryModel.findOne({
+    customerId: sessionid,
+  });
+
+  if (!foundCustomer) {
     return [];
   }
 
-  const orders = [];
-  for (const order of allUserOrders) {
-    const orderInfo = await MenuModel.findOne({ id: order.orderedItem });
-    orders.push(orderInfo);
-  }
-
-  return Promise.all(orders);
+  return foundCustomer;
 }
 
 module.exports = {
@@ -113,6 +144,6 @@ module.exports = {
   newOrder,
   getMenu,
   findOrderById,
-  getOrderInfo,
+  checkoutOrder,
   orderHistory,
 };

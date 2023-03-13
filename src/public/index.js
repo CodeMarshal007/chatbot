@@ -6,38 +6,34 @@ const socket = io();
 
 socket.on("welcome", (serverMessage) => {
   welcomeMessage(serverMessage);
+});
 
-  chatScreen.scrollTop = chatScreen.scrollHeight;
+socket.on("customerMessage", (serverMessage) => {
+  customerMessage(serverMessage);
 });
 
 socket.on("menu", (serverMessage) => {
   showMenu(serverMessage);
-
-  chatScreen.scrollTop = chatScreen.scrollHeight;
 });
 
 socket.on("orderPlaced", (serverMessage) => {
-  outputMessage(serverMessage);
-
-  chatScreen.scrollTop = chatScreen.scrollHeight;
+  placeOrder(serverMessage);
 });
 
-socket.on("checkout", (serverMessage) => {
-  simpleMassage(serverMessage);
-
-  chatScreen.scrollTop = chatScreen.scrollHeight;
+socket.on("simpleMessage", (serverMessage) => {
+  simpleMessage(serverMessage);
 });
 
 socket.on("orderHistory", (serverMessage) => {
   orderHistory(serverMessage);
-
-  chatScreen.scrollTop = chatScreen.scrollHeight;
 });
 
 //************************************************** */
 chatForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const message = e.target.elements.message.value;
+
+  socket.emit("customerMessage", message);
 
   if (message === "1") {
     socket.emit("getMenu", "1");
@@ -85,9 +81,10 @@ function welcomeMessage(serverMessage) {
     </p>
   </div>`;
   messageList.appendChild(newMessageListItem);
+  chatScreen.scrollTop = chatScreen.scrollHeight;
 }
 
-function outputMessage(serverMessage) {
+function placeOrder(serverMessage) {
   const messageList = document.querySelector("#message-list");
 
   const newMessageListItem = document.createElement("li");
@@ -103,10 +100,12 @@ function outputMessage(serverMessage) {
   Price: ${serverMessage.msg.orderedPrice}</br>
 Ordered on: ${serverMessage.msg.orderedAT}.
     </p>
+    <p>Press 1 to place a new order</p>
 
 </div>`;
 
   messageList.appendChild(newMessageListItem);
+  chatScreen.scrollTop = chatScreen.scrollHeight;
 }
 
 function showMenu(serverMessage) {
@@ -134,37 +133,41 @@ function showMenu(serverMessage) {
 </div>`;
 
   messageList.appendChild(newMessageListItem);
+  chatScreen.scrollTop = chatScreen.scrollHeight;
 }
 
 function orderHistory(serverMessage) {
   const messageList = document.querySelector("#message-list");
 
-  const newMessageListItem = document.createElement("li");
+  serverMessage.msg.forEach((checkout) => {
+    const newMessageListItem = document.createElement("li");
+    const menu = [];
+    let total = 0;
 
-  const menu = [];
-  let total = 0;
+    checkout.forEach((item) => {
+      menu.push(item.id + "  " + item.name + ": " + " ₦" + item.price);
+      total += parseFloat(item.price);
+    });
 
-  serverMessage.msg.forEach((item) => {
-    menu.push(item.id + "  " + item.name + ": " + " ₦" + item.price);
-    total += parseFloat(item.price);
+    const menuItems = menu.map((menuItem) => `<br>${menuItem}`).join("");
+
+    newMessageListItem.innerHTML = `
+      <div class="message">
+        <p class="meta">${serverMessage.user} <span>${serverMessage.time}</span></p>
+        <p>Order history</p>
+        <p class="text">
+          ${menuItems}</br>
+          Total: ₦${total}
+        </p>
+      </div>`;
+
+    messageList.appendChild(newMessageListItem);
   });
 
-  const menuItems = menu.map((menuItem) => `<br>${menuItem}`).join("");
-
-  newMessageListItem.innerHTML = `
-    <div class="message">
-      <p class="meta">${serverMessage.user} <span>${serverMessage.time}</span></p>
-      <p>Order history</p>
-      <p class="text">
-         ${menuItems}</br>
-         total: ₦${total}
-      </p>
-    </div>`;
-
-  messageList.appendChild(newMessageListItem);
+  chatScreen.scrollTop = chatScreen.scrollHeight;
 }
 
-function simpleMassage(serverMessage) {
+function simpleMessage(serverMessage) {
   const messageList = document.querySelector("#message-list");
 
   const newMessageListItem = document.createElement("li");
@@ -177,4 +180,21 @@ function simpleMassage(serverMessage) {
     </div>`;
 
   messageList.appendChild(newMessageListItem);
+  chatScreen.scrollTop = chatScreen.scrollHeight;
+}
+
+function customerMessage(serverMessage) {
+  const messageList = document.querySelector("#message-list");
+
+  const newMessageListItem = document.createElement("li");
+
+  newMessageListItem.innerHTML = `
+    <div class="message">
+      <p class="meta">${serverMessage.user} <span>${serverMessage.time}</span></p>
+      <p>${serverMessage.msg}</p>
+     
+    </div>`;
+
+  messageList.appendChild(newMessageListItem);
+  chatScreen.scrollTop = chatScreen.scrollHeight;
 }
