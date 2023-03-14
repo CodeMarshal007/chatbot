@@ -1,5 +1,4 @@
 const chatForm = document.querySelector("#chat-form");
-
 const chatScreen = document.querySelector(".chat-screen");
 
 const socket = io();
@@ -35,6 +34,8 @@ socket.on("simpleMessage", (serverMessage) => {
   simpleMessage(serverMessage);
 });
 
+let menuDisplayed = false;
+
 chatForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const message = e.target.elements.message.value;
@@ -43,14 +44,10 @@ chatForm.addEventListener("submit", (e) => {
 
   if (message === "1") {
     socket.emit("getMenu", "1");
-  } else if (
-    message === "100" ||
-    message === "101" ||
-    message === "102" ||
-    message === "103" ||
-    message === "104"
-  ) {
+    menuDisplayed = true;
+  } else if (menuDisplayed && message >= "100" && message <= "104") {
     socket.emit("placeOrder", message);
+    menuDisplayed = false;
   } else if (message === "99") {
     socket.emit("checkoutOrder", message);
   } else if (message === "98") {
@@ -72,14 +69,14 @@ chatForm.addEventListener("submit", (e) => {
 //** Functions  */
 
 function welcomeMessage(serverMessage) {
+  const messageList = document.querySelector("#message-list");
+  const newMessageListItem = document.createElement("div");
   const date = new Date().toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
   });
-  const messageList = document.querySelector("#message-list");
-  const newMessageListItem = document.createElement("li");
 
   newMessageListItem.innerHTML = `
     <p id= "date">${date}</p>
@@ -95,8 +92,7 @@ function welcomeMessage(serverMessage) {
 
 function mainMenu(serverMessage) {
   const messageList = document.querySelector("#message-list");
-  const newMessageListItem = document.createElement("li");
-
+  const newMessageListItem = document.createElement("div");
   newMessageListItem.innerHTML = `
     
   <div class="message">
@@ -111,9 +107,7 @@ function mainMenu(serverMessage) {
 
 function placeOrder(serverMessage) {
   const messageList = document.querySelector("#message-list");
-
-  const newMessageListItem = document.createElement("li");
-
+  const newMessageListItem = document.createElement("div");
   newMessageListItem.innerHTML = `
 <div class="message">
 
@@ -135,9 +129,7 @@ Ordered on: ${serverMessage.msg.orderedAT}.
 
 function showMenu(serverMessage) {
   const messageList = document.querySelector("#message-list");
-
-  const newMessageListItem = document.createElement("li");
-
+  const newMessageListItem = document.createElement("div");
   const menu = [];
   serverMessage.msg.forEach((item) =>
     menu.push(
@@ -164,9 +156,10 @@ function showMenu(serverMessage) {
 
 function orderHistory(serverMessage) {
   const messageList = document.querySelector("#message-list");
+  const newMessageListItem = document.createElement("div");
 
   serverMessage.msg.forEach((checkout) => {
-    const newMessageListItem = document.createElement("li");
+    const newMessageListItem = document.createElement("div");
     const menu = [];
     let total = 0;
 
@@ -187,7 +180,6 @@ function orderHistory(serverMessage) {
         </p>
         <p>Press 10 to go back to the main menu</p>
       </div>`;
-
     messageList.appendChild(newMessageListItem);
   });
 
@@ -196,11 +188,10 @@ function orderHistory(serverMessage) {
 
 function customerMessage(serverMessage) {
   const messageList = document.querySelector("#message-list");
-
-  const newMessageListItem = document.createElement("li");
+  const newMessageListItem = document.createElement("div");
 
   newMessageListItem.innerHTML = `
-    <div class="message">
+    <div class="customer-message">
       <p class="meta">${serverMessage.user} <span>${serverMessage.time}</span></p>
       <p>${serverMessage.msg}</p>
      
@@ -212,8 +203,8 @@ function customerMessage(serverMessage) {
 
 function currentOrder(serverMessage) {
   const messageList = document.querySelector("#message-list");
+  const newMessageListItem = document.createElement("div");
 
-  const newMessageListItem = document.createElement("li");
   const currentOrders = [];
 
   serverMessage.msg.forEach((order) => {
@@ -233,7 +224,8 @@ function currentOrder(serverMessage) {
         <p class="text">
           ${currentOrder}</br>
                 </p>
-      <p>Press 10 to go back to the main menu</p>
+      press 99 to checkout order </br>
+      Press 10 to go back to the main menu </br>
       </div>`;
 
   messageList.appendChild(newMessageListItem);
@@ -243,8 +235,7 @@ function currentOrder(serverMessage) {
 
 function simpleMessage(serverMessage) {
   const messageList = document.querySelector("#message-list");
-
-  const newMessageListItem = document.createElement("li");
+  const newMessageListItem = document.createElement("div");
 
   newMessageListItem.innerHTML = `
     <div class="message">

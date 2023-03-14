@@ -11,7 +11,6 @@ const CustomerSchema = new Schema(
     },
     username: {
       type: String,
-      enum: ["anonymous", "customer"],
       default: "customer",
     },
     orders: [

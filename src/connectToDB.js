@@ -4,16 +4,16 @@ const CONFIG = require("./config");
 function connectToDB() {
   mongoose.connect(CONFIG.LOCAL_MONGODB_URI, {
     useNewUrlParser: true,
+    useUnifiedTopology: true,
   });
 
-  mongoose.connection.on("connected", () => {
+  const db = mongoose.connection;
+  db.on("error", console.error.bind(console, "connection error:"));
+  db.once("open", () => {
     console.log("Connected to Local MongoDB Successfully");
   });
 
-  mongoose.connection.on("error", (err) => {
-    console.log("An error occurred while connecting to MongoDB");
-    console.log(err);
-  });
+  return db;
 }
 
 module.exports = connectToDB;

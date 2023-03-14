@@ -18,7 +18,12 @@ const menuRouter = require("./routes/menu/menu.router");
 const PORT = CONFIG.PORT || 8000;
 
 const app = express();
-connectToDB();
+const db = connectToDB();
+
+// const sessionStore = new MongoStore({
+//   mongooseConnection: db,
+//   collection: "sessions",
+// });
 
 const server = http.createServer(app);
 const io = socketio(server);
