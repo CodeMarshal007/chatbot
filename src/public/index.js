@@ -42,31 +42,40 @@ chatForm.addEventListener("submit", (e) => {
 
   socket.emit("customerMessage", message);
 
-  if (message === "1") {
-    socket.emit("getMenu", "1");
-    menuDisplayed = true;
-  } else if (menuDisplayed && message >= "100" && message <= "104") {
-    socket.emit("placeOrder", message);
-    menuDisplayed = false;
-  } else if (message === "99") {
-    socket.emit("checkoutOrder", message);
-  } else if (message === "98") {
-    socket.emit("orderHistory", message);
-  } else if (message === "97") {
-    socket.emit("currentOrder");
-  } else if (message === "0") {
-    socket.emit("cancelOrder");
-  } else if (message === "10") {
-    socket.emit("mainMenu");
-  } else {
-    socket.emit("chatMessage", message);
+  switch (message) {
+    case "1":
+      socket.emit("getMenu", "1");
+      menuDisplayed = true;
+      break;
+    case "99":
+      socket.emit("checkoutOrder", message);
+      break;
+    case "98":
+      socket.emit("orderHistory", message);
+      break;
+    case "97":
+      socket.emit("currentOrder");
+      break;
+    case "0":
+      socket.emit("cancelOrder");
+      break;
+    case "10":
+      socket.emit("mainMenu");
+      break;
+    default:
+      if (menuDisplayed && message >= "100" && message <= "104") {
+        socket.emit("placeOrder", message);
+        menuDisplayed = false;
+      } else {
+        socket.emit("chatMessage", message);
+      }
   }
 
   e.target.elements.message.value = "";
   e.target.elements.message.focus();
 });
 
-//** Functions  */
+//** Functions definitions */
 
 function welcomeMessage(serverMessage) {
   const messageList = document.querySelector("#message-list");
