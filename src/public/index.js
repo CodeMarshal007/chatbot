@@ -7,6 +7,9 @@ const socket = io();
 socket.on("welcome", (serverMessage) => {
   welcomeMessage(serverMessage);
 });
+socket.on("mainMenu", (serverMessage) => {
+  mainMenu(serverMessage);
+});
 
 socket.on("customerMessage", (serverMessage) => {
   customerMessage(serverMessage);
@@ -20,15 +23,18 @@ socket.on("orderPlaced", (serverMessage) => {
   placeOrder(serverMessage);
 });
 
-socket.on("simpleMessage", (serverMessage) => {
-  simpleMessage(serverMessage);
-});
-
 socket.on("orderHistory", (serverMessage) => {
   orderHistory(serverMessage);
 });
 
-//************************************************** */
+socket.on("currentOrder", (serverMessage) => {
+  currentOrder(serverMessage);
+});
+
+socket.on("simpleMessage", (serverMessage) => {
+  simpleMessage(serverMessage);
+});
+
 chatForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const message = e.target.elements.message.value;
@@ -50,9 +56,11 @@ chatForm.addEventListener("submit", (e) => {
   } else if (message === "98") {
     socket.emit("orderHistory", message);
   } else if (message === "97") {
-    socket.emit("currentOrder", message);
+    socket.emit("currentOrder");
   } else if (message === "0") {
-    socket.emit("cancelOrder", "0");
+    socket.emit("cancelOrder");
+  } else if (message === "10") {
+    socket.emit("mainMenu");
   } else {
     socket.emit("chatMessage", message);
   }
@@ -61,7 +69,8 @@ chatForm.addEventListener("submit", (e) => {
   e.target.elements.message.focus();
 });
 
-// *****************************************************/
+//** Functions  */
+
 function welcomeMessage(serverMessage) {
   const date = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -71,9 +80,25 @@ function welcomeMessage(serverMessage) {
   });
   const messageList = document.querySelector("#message-list");
   const newMessageListItem = document.createElement("li");
-  const userMessage = serverMessage;
+
   newMessageListItem.innerHTML = `
     <p id= "date">${date}</p>
+  <div class="message">
+    <p class="meta"> ${serverMessage.user} <span>${serverMessage.time}</span></p>
+    <p class="text">
+       ${serverMessage.msg}
+    </p>
+  </div>`;
+  messageList.appendChild(newMessageListItem);
+  chatScreen.scrollTop = chatScreen.scrollHeight;
+}
+
+function mainMenu(serverMessage) {
+  const messageList = document.querySelector("#message-list");
+  const newMessageListItem = document.createElement("li");
+
+  newMessageListItem.innerHTML = `
+    
   <div class="message">
     <p class="meta"> ${serverMessage.user} <span>${serverMessage.time}</span></p>
     <p class="text">
@@ -100,7 +125,7 @@ function placeOrder(serverMessage) {
   Price: ${serverMessage.msg.orderedPrice}</br>
 Ordered on: ${serverMessage.msg.orderedAT}.
     </p>
-    <p>Press 1 to place a new order</p>
+   <p>Press 1 to make a new order</p>
 
 </div>`;
 
@@ -129,6 +154,7 @@ function showMenu(serverMessage) {
   <p class="text">
      ${menuItems}
   </p>
+  <p>Press 10 to go back to the main menu</p>
 
 </div>`;
 
@@ -159,6 +185,7 @@ function orderHistory(serverMessage) {
           ${menuItems}</br>
           Total: ₦${total}
         </p>
+        <p>Press 10 to go back to the main menu</p>
       </div>`;
 
     messageList.appendChild(newMessageListItem);
@@ -167,7 +194,7 @@ function orderHistory(serverMessage) {
   chatScreen.scrollTop = chatScreen.scrollHeight;
 }
 
-function simpleMessage(serverMessage) {
+function customerMessage(serverMessage) {
   const messageList = document.querySelector("#message-list");
 
   const newMessageListItem = document.createElement("li");
@@ -183,7 +210,38 @@ function simpleMessage(serverMessage) {
   chatScreen.scrollTop = chatScreen.scrollHeight;
 }
 
-function customerMessage(serverMessage) {
+function currentOrder(serverMessage) {
+  const messageList = document.querySelector("#message-list");
+
+  const newMessageListItem = document.createElement("li");
+  const currentOrders = [];
+
+  serverMessage.msg.forEach((order) => {
+    currentOrders.push(`
+    food: ${order.name}<br>
+    price: ₦${order.price}<br>
+    ordered on: ${order.orderDate}<br>
+  `);
+  });
+
+  const currentOrder = currentOrders.join("<br>");
+
+  newMessageListItem.innerHTML = `
+      <div class="message">
+        <p class="meta">${serverMessage.user} <span>${serverMessage.time}</span></p>
+        <p>Current Order</p>
+        <p class="text">
+          ${currentOrder}</br>
+                </p>
+      <p>Press 10 to go back to the main menu</p>
+      </div>`;
+
+  messageList.appendChild(newMessageListItem);
+
+  chatScreen.scrollTop = chatScreen.scrollHeight;
+}
+
+function simpleMessage(serverMessage) {
   const messageList = document.querySelector("#message-list");
 
   const newMessageListItem = document.createElement("li");
@@ -192,7 +250,7 @@ function customerMessage(serverMessage) {
     <div class="message">
       <p class="meta">${serverMessage.user} <span>${serverMessage.time}</span></p>
       <p>${serverMessage.msg}</p>
-     
+      <p>Press 10 to go back to the main menu</p>
     </div>`;
 
   messageList.appendChild(newMessageListItem);

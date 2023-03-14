@@ -17,7 +17,15 @@ function formatMessage(user, msg) {
 function welcomeCustomer() {
   return {
     user: "Chatbot",
-    msg: "Hi welcome to BigBite!</br > Select 1 to place an order</br > Select 99 to checkout order</br > Select 98 to see order history</br >Select 97 to see current order</br > Select 0 to cancel order</br >",
+    msg: "BigBite</br > Hi welcome to BigBite!</br > Select 1 to place an order</br > Select 99 to checkout order</br > Select 98 to see order history</br >Select 97 to see current order</br > Select 0 to cancel order</br >",
+    time: moment().format("h:mm a"),
+  };
+}
+
+function mainMenu() {
+  return {
+    user: "Chatbot",
+    msg: "<p>BigBite</p > Select 1 to place an order</br > Select 99 to checkout order</br > Select 98 to see order history</br >Select 97 to see current order</br > Select 0 to cancel order</br >",
     time: moment().format("h:mm a"),
   };
 }
@@ -44,6 +52,7 @@ async function newOrder(sessionId, customerOption) {
     }
 
     const foundMenuItemId = await MenuModel.findOne({ id: menuItemId });
+
     if (!foundMenuItemId) {
       throw new Error("Menu item not found");
     }
@@ -138,12 +147,69 @@ async function orderHistory(sessionid) {
   return foundCustomer;
 }
 
+async function currentOrder(sessionid) {
+  try {
+    const customerId = sessionid;
+    const foundCustomer = await CustomerModel.findOne({ userId: customerId });
+
+    if (!foundCustomer) {
+      throw new Error("Customer not found");
+    }
+
+    const customerOrders = foundCustomer.orders;
+    if (customerOrders.length === 0) {
+      console.log("You haven't placed any orders.");
+      return [];
+    }
+
+    const populatedOrders = await OrderModel.find({
+      _id: { $in: customerOrders },
+    }).populate("orderedItem");
+
+    const ordersData = populatedOrders.map((order) => {
+      return {
+        id: order.orderedItem.id,
+        name: order.orderedItem.name,
+        price: order.orderedItem.price,
+        orderDate: order.orderedAT,
+      };
+    });
+    return ordersData;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+async function cancelOrder(sessionid) {
+  try {
+    const customerId = sessionid;
+    const foundCustomer = await CustomerModel.findOne({ userId: customerId });
+
+    if (!foundCustomer) {
+      throw new Error("Customer not found");
+    }
+
+    const customerOrders = foundCustomer.orders;
+    if (customerOrders.length === 0) {
+      console.log("You haven't placed any orders.");
+      return [];
+    }
+    customerOrders.splice(0, customerOrders.length);
+    await foundCustomer.save();
+    return [1];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
 module.exports = {
   formatMessage,
   welcomeCustomer,
+  mainMenu,
   newOrder,
   getMenu,
   findOrderById,
   checkoutOrder,
   orderHistory,
+  currentOrder,
+  cancelOrder,
 };

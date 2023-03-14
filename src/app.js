@@ -65,10 +65,19 @@ io.use(
   })
 );
 
+setTimeout(() => {}, 1000);
+
 io.on("connection", (socket) => {
   const sessionId = socket.handshake.session.id;
+  let msg;
 
   socket.emit("welcome", utils.welcomeCustomer());
+
+  socket.on("mainMenu", () => {
+    setTimeout(() => {
+      socket.emit("mainMenu", utils.mainMenu());
+    }, 500);
+  });
 
   socket.on("customerMessage", (message) => {
     socket.emit("customerMessage", utils.formatMessage("customer", message));
@@ -77,7 +86,9 @@ io.on("connection", (socket) => {
   //show menu
   socket.on("getMenu", async () => {
     const menu = await utils.getMenu();
-    socket.emit("menu", utils.formatMessage("chatBot", menu));
+    setTimeout(() => {
+      socket.emit("menu", utils.formatMessage("chatBot", menu));
+    }, 500);
   });
 
   socket.on("placeOrder", async (orderNumber) => {
@@ -95,45 +106,76 @@ io.on("connection", (socket) => {
       orderedPrice: createdOrder.price,
       orderedAT: newOrder.orderedAT,
     };
-
-    socket.emit("orderPlaced", utils.formatMessage("Chatbot", message));
+    setTimeout(() => {
+      socket.emit("orderPlaced", utils.formatMessage("Chatbot", message));
+    }, 500);
   });
 
   socket.on("checkoutOrder", async (message) => {
-    let msg = "";
     const cart = await utils.checkoutOrder(sessionId);
     if (cart && cart.length === 0) {
-      msg = " No order to place. Press 1 to place a new order";
+      msg = " No order to place.";
     } else {
       msg = "Order placed.";
     }
-
-    socket.emit("simpleMessage", utils.formatMessage("Chatbot", msg));
+    setTimeout(() => {
+      socket.emit("simpleMessage", utils.formatMessage("Chatbot", msg));
+    }, 500);
   });
 
   socket.on("orderHistory", async (message) => {
-    let msg;
     const orderHistory = await utils.orderHistory(sessionId);
     if (orderHistory.length === 0) {
-      msg = "You don't have any order history";
-      socket.emit("simpleMessage", utils.formatMessage("Chatbot", msg));
+      msg = "You don't have any order history.";
+      setTimeout(() => {
+        socket.emit("simpleMessage", utils.formatMessage("Chatbot", msg));
+      }, 500);
       return;
     }
-
-    console.log("My new order history", orderHistory);
 
     const history = orderHistory.orders.map((order) => {
       return order;
     });
-
-    socket.emit("orderHistory", utils.formatMessage("Chatbot", history));
+    setTimeout(() => {
+      socket.emit("orderHistory", utils.formatMessage("Chatbot", history));
+    }, 500);
   });
 
-  socket.on("disconnect", () => {
-    io.emit(
-      "message",
-      utils.formatMessage("Chatbot", "A user has disconnected")
-    );
+  socket.on("currentOrder", async () => {
+    const currentOrder = await utils.currentOrder(sessionId);
+    if (currentOrder.length === 0) {
+      msg = "You don't have any order.";
+      setTimeout(() => {
+        socket.emit("simpleMessage", utils.formatMessage("Chatbot", msg));
+      }, 500);
+
+      return;
+    }
+
+    setTimeout(() => {
+      socket.emit("currentOrder", utils.formatMessage("Chatbot", currentOrder));
+    }, 500);
+  });
+
+  socket.on("cancelOrder", async () => {
+    const currentOrder = await utils.cancelOrder(sessionId);
+    if (currentOrder.length === 0) {
+      msg = "You don't have any order.";
+    } else {
+      msg = "You have cancelled your order.";
+    }
+
+    setTimeout(() => {
+      socket.emit("simpleMessage", utils.formatMessage("Chatbot", msg));
+    }, 500);
+  });
+
+  socket.on("chatMessage", async () => {
+    msg = "You have made an invalid selection";
+
+    setTimeout(() => {
+      socket.emit("simpleMessage", utils.formatMessage("Chatbot", msg));
+    }, 500);
   });
 });
 
