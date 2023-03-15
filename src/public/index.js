@@ -169,40 +169,6 @@ function showMenu(serverMessage) {
   chatScreen.scrollTop = chatScreen.scrollHeight;
 }
 
-// function orderHistory(serverMessage) {
-//   const messageList = document.querySelector("#message-list");
-//   // serverMessage.forEach((o) => {
-//   //   console.log(o);
-//   // });
-//   serverMessage.msg.forEach((checkout) => {
-//     const newMessageListItem = document.createElement("div");
-//     const menu = [];
-//     let total = 0;
-
-//     checkout.forEach((item) => {
-//       menu.push(item.id + "  " + item.name + ": " + " ₦" + item.price);
-//       total += parseFloat(item.price);
-//     });
-
-//     const menuItems = menu.map((menuItem) => `<br>${menuItem}`).join("");
-
-//     newMessageListItem.innerHTML = `
-//       <div class="chat-message chatbot">
-//        <div class="message">
-//         <p class="meta">${serverMessage.user} <span>${serverMessage.time}</span></p>
-//         <p>Order history</p>
-//         <p class="text">
-//           ${menuItems}</br>
-//           Total: ₦${total}
-//         </p>
-//         <p>Press 10 to go back to the main menu</p>
-//       </div>
-//       </div>`;
-//     messageList.appendChild(newMessageListItem);
-//   });
-
-//   chatScreen.scrollTop = chatScreen.scrollHeight;
-// }
 function orderHistory(serverMessage) {
   const messageList = document.querySelector("#message-list");
 
