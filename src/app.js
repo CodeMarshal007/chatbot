@@ -141,6 +141,7 @@ io.on("connection", (socket) => {
     const history = orderHistory.orders.map((order) => {
       return order;
     });
+    console.log(history);
     setTimeout(() => {
       socket.emit("orderHistory", utils.formatMessage("Chatbot", history));
     }, 500);

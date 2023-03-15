@@ -117,15 +117,14 @@ async function checkoutOrder(customerId) {
     if (!customerHistory) {
       const newHistory = new HistoryModel({
         customerId,
-        orders: ordersData,
+        orders: [ordersData],
       });
       await newHistory.save();
     } else {
-      const newOrdersData = ordersData.map((order) => order);
-      customerHistory.orders.push(newOrdersData);
+      // const newOrdersData = ordersData.map((order) => order);
+      customerHistory.orders.push(ordersData);
       await customerHistory.save();
     }
-
     customerOrders.splice(0, customerOrders.length);
     await foundCustomer.save();
   } catch (error) {

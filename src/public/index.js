@@ -51,6 +51,7 @@ chatForm.addEventListener("submit", (e) => {
       socket.emit("checkoutOrder", message);
       break;
     case "98":
+      console.log("front");
       socket.emit("orderHistory", message);
       break;
     case "97":
@@ -168,9 +169,42 @@ function showMenu(serverMessage) {
   chatScreen.scrollTop = chatScreen.scrollHeight;
 }
 
+// function orderHistory(serverMessage) {
+//   const messageList = document.querySelector("#message-list");
+//   // serverMessage.forEach((o) => {
+//   //   console.log(o);
+//   // });
+//   serverMessage.msg.forEach((checkout) => {
+//     const newMessageListItem = document.createElement("div");
+//     const menu = [];
+//     let total = 0;
+
+//     checkout.forEach((item) => {
+//       menu.push(item.id + "  " + item.name + ": " + " ₦" + item.price);
+//       total += parseFloat(item.price);
+//     });
+
+//     const menuItems = menu.map((menuItem) => `<br>${menuItem}`).join("");
+
+//     newMessageListItem.innerHTML = `
+//       <div class="chat-message chatbot">
+//        <div class="message">
+//         <p class="meta">${serverMessage.user} <span>${serverMessage.time}</span></p>
+//         <p>Order history</p>
+//         <p class="text">
+//           ${menuItems}</br>
+//           Total: ₦${total}
+//         </p>
+//         <p>Press 10 to go back to the main menu</p>
+//       </div>
+//       </div>`;
+//     messageList.appendChild(newMessageListItem);
+//   });
+
+//   chatScreen.scrollTop = chatScreen.scrollHeight;
+// }
 function orderHistory(serverMessage) {
   const messageList = document.querySelector("#message-list");
-  const newMessageListItem = document.createElement("div");
 
   serverMessage.msg.forEach((checkout) => {
     const newMessageListItem = document.createElement("div");
@@ -186,7 +220,7 @@ function orderHistory(serverMessage) {
 
     newMessageListItem.innerHTML = `
       <div class="chat-message chatbot">
-       <div class="message">
+      <div class="message">
         <p class="meta">${serverMessage.user} <span>${serverMessage.time}</span></p>
         <p>Order history</p>
         <p class="text">
@@ -196,6 +230,7 @@ function orderHistory(serverMessage) {
         <p>Press 10 to go back to the main menu</p>
       </div>
       </div>`;
+
     messageList.appendChild(newMessageListItem);
   });
 

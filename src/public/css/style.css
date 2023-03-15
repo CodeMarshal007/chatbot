@@ -1,27 +1,41 @@
+body{
+   background-color: cornsilk;
+   font-family: cursive;
+}
+
+
+.chat-container {
+   display: flex;
+   flex-direction: column;
+   height: 90vh;
+   max-width: 70%;
+   margin: 2% auto;
+  
+
+}
 .chat-header {
-   background-color: #25D366;
+   background-image: url('https://img.freepik.com/free-photo/chicken-wings-barbecue-sweetly-sour-sauce-picnic-summer-menu-tasty-food-top-view-flat-lay_2829-6471.jpg');
+   background-size: cover;
+   background-position: center;
    color: #FFFFFF;
    padding: 10px;
+
 }
 
 .chat-header h1 {
    margin: 0;
 }
 
-.chat-container {
-   display: flex;
-   flex-direction: column;
-   height: 80vh;
-   max-width: 70%;
-   margin: auto;
-
-}
-
-#message-list {
-   flex-grow: 1;
+#message-list{
+   background-image: url('https://smashinglogo.com/v3/envision/image.jpg?id=b78ed479-7cdb-4b8b-b5ca-a807ade51323&format=desktop');
+      background-size: cover;
+      background-position: center;
+         flex-grow: 1;
    overflow-y: scroll;
    padding: 10px;
 }
+
+
 
 .chat-message {
    display: flex;
@@ -46,7 +60,7 @@
 }
 
 .chat-message.customer .message {
-   background-color: #FFFFFF;
+   background-color: burlywood;
    align-self: flex-start;
 }
 
