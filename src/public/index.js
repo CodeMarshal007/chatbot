@@ -1,5 +1,5 @@
 const chatForm = document.querySelector("#chat-form");
-const chatScreen = document.querySelector(".chat-screen");
+const chatScreen = document.getElementById("message-list");
 
 const socket = io();
 
@@ -89,11 +89,13 @@ function welcomeMessage(serverMessage) {
 
   newMessageListItem.innerHTML = `
     <p id= "date">${date}</p>
+ <div class="chat-message chatbot">
   <div class="message">
     <p class="meta"> ${serverMessage.user} <span>${serverMessage.time}</span></p>
     <p class="text">
        ${serverMessage.msg}
     </p>
+     </div>
   </div>`;
   messageList.appendChild(newMessageListItem);
   chatScreen.scrollTop = chatScreen.scrollHeight;
@@ -104,11 +106,13 @@ function mainMenu(serverMessage) {
   const newMessageListItem = document.createElement("div");
   newMessageListItem.innerHTML = `
     
-  <div class="message">
+<div class="chat-message chatbot">
+ <div class="message">
     <p class="meta"> ${serverMessage.user} <span>${serverMessage.time}</span></p>
     <p class="text">
        ${serverMessage.msg}
     </p>
+    </div>
   </div>`;
   messageList.appendChild(newMessageListItem);
   chatScreen.scrollTop = chatScreen.scrollHeight;
@@ -118,8 +122,8 @@ function placeOrder(serverMessage) {
   const messageList = document.querySelector("#message-list");
   const newMessageListItem = document.createElement("div");
   newMessageListItem.innerHTML = `
+<div class="chat-message chatbot">
 <div class="message">
-
   <p class="meta"> ${serverMessage.user} <span>${serverMessage.time}</span></p>
 
   <p class="text">
@@ -129,8 +133,8 @@ function placeOrder(serverMessage) {
 Ordered on: ${serverMessage.msg.orderedAT}.
     </p>
    <p>Press 1 to make a new order</p>
-
-</div>`;
+   </div>
+   </div>`;
 
   messageList.appendChild(newMessageListItem);
   chatScreen.scrollTop = chatScreen.scrollHeight;
@@ -148,8 +152,8 @@ function showMenu(serverMessage) {
   const menuItems = menu.map((menuItem) => `<br>${menuItem}`).join("");
 
   newMessageListItem.innerHTML = `
+<div class="chat-message chatbot">
 <div class="message">
-
   <p class="meta"> ${serverMessage.user} <span>${serverMessage.time}</span></p>
   <p>Please make your order:</p>
   <p class="text">
@@ -157,6 +161,7 @@ function showMenu(serverMessage) {
   </p>
   <p>Press 10 to go back to the main menu</p>
 
+</div>
 </div>`;
 
   messageList.appendChild(newMessageListItem);
@@ -180,7 +185,8 @@ function orderHistory(serverMessage) {
     const menuItems = menu.map((menuItem) => `<br>${menuItem}`).join("");
 
     newMessageListItem.innerHTML = `
-      <div class="message">
+      <div class="chat-message chatbot">
+       <div class="message">
         <p class="meta">${serverMessage.user} <span>${serverMessage.time}</span></p>
         <p>Order history</p>
         <p class="text">
@@ -188,6 +194,7 @@ function orderHistory(serverMessage) {
           Total: ₦${total}
         </p>
         <p>Press 10 to go back to the main menu</p>
+      </div>
       </div>`;
     messageList.appendChild(newMessageListItem);
   });
@@ -200,10 +207,12 @@ function customerMessage(serverMessage) {
   const newMessageListItem = document.createElement("div");
 
   newMessageListItem.innerHTML = `
-    <div class="customer-message">
+    <div class="chat-message customer">
+     <div class="message">
       <p class="meta">${serverMessage.user} <span>${serverMessage.time}</span></p>
       <p>${serverMessage.msg}</p>
      
+    </div>
     </div>`;
 
   messageList.appendChild(newMessageListItem);
@@ -227,6 +236,7 @@ function currentOrder(serverMessage) {
   const currentOrder = currentOrders.join("<br>");
 
   newMessageListItem.innerHTML = `
+     <div class="chat-message chatbot">
       <div class="message">
         <p class="meta">${serverMessage.user} <span>${serverMessage.time}</span></p>
         <p>Current Order</p>
@@ -235,6 +245,7 @@ function currentOrder(serverMessage) {
                 </p>
       press 99 to checkout order </br>
       Press 10 to go back to the main menu </br>
+      </div>
       </div>`;
 
   messageList.appendChild(newMessageListItem);
@@ -247,10 +258,12 @@ function simpleMessage(serverMessage) {
   const newMessageListItem = document.createElement("div");
 
   newMessageListItem.innerHTML = `
-    <div class="message">
+    <div class="chat-message chatbot">
+     <div class="message">
       <p class="meta">${serverMessage.user} <span>${serverMessage.time}</span></p>
       <p>${serverMessage.msg}</p>
       <p>Press 10 to go back to the main menu</p>
+    </div>
     </div>`;
 
   messageList.appendChild(newMessageListItem);
