@@ -4,7 +4,6 @@ const MenuModel = require("../models/menu.model");
 const HistoryModel = require("../models/orderHistory.model");
 
 const moment = require("moment");
-const { checkout } = require("../routes/chat/chat.router");
 
 function formatMessage(user, msg) {
   return {
@@ -34,7 +33,6 @@ async function getMenu() {
   try {
     const menu = await MenuModel.find();
     if (!menu.length > 0) {
-      console.log("Menu is empty");
     }
     return menu;
   } catch (error) {}
@@ -95,7 +93,6 @@ async function checkoutOrder(customerId) {
 
     const customerOrders = foundCustomer.orders;
     if (customerOrders.length === 0) {
-      console.log("You haven't placed any orders.");
       return [];
     }
 
@@ -121,7 +118,6 @@ async function checkoutOrder(customerId) {
       });
       await newHistory.save();
     } else {
-      // const newOrdersData = ordersData.map((order) => order);
       customerHistory.orders.push(ordersData);
       await customerHistory.save();
     }
@@ -157,7 +153,6 @@ async function currentOrder(sessionid) {
 
     const customerOrders = foundCustomer.orders;
     if (customerOrders.length === 0) {
-      console.log("You haven't placed any orders.");
       return [];
     }
 
@@ -189,7 +184,6 @@ async function cancelOrder(sessionid) {
 
     const customerOrders = foundCustomer.orders;
     if (customerOrders.length === 0) {
-      console.log("You haven't placed any orders.");
       return [];
     }
     customerOrders.splice(0, customerOrders.length);

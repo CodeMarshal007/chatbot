@@ -3,6 +3,8 @@ const chatScreen = document.getElementById("message-list");
 
 const socket = io();
 
+//**Event Listeners */
+
 socket.on("welcome", (serverMessage) => {
   welcomeMessage(serverMessage);
 });
@@ -36,6 +38,8 @@ socket.on("simpleMessage", (serverMessage) => {
 
 let menuDisplayed = false;
 
+//**Add event listener to input field */
+
 chatForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const message = e.target.elements.message.value;
@@ -64,7 +68,7 @@ chatForm.addEventListener("submit", (e) => {
       socket.emit("mainMenu");
       break;
     default:
-      if (menuDisplayed && message >= "100" && message <= "104") {
+      if (menuDisplayed && message >= "100" && message <= "108") {
         socket.emit("placeOrder", message);
         menuDisplayed = false;
       } else {
@@ -81,15 +85,9 @@ chatForm.addEventListener("submit", (e) => {
 function welcomeMessage(serverMessage) {
   const messageList = document.querySelector("#message-list");
   const newMessageListItem = document.createElement("div");
-  const date = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
 
   newMessageListItem.innerHTML = `
-    <p id= "date">${date}</p>
+    
  <div class="chat-message chatbot">
   <div class="message">
     <p class="meta"> ${serverMessage.user} <span>${serverMessage.time}</span></p>
@@ -133,7 +131,9 @@ function placeOrder(serverMessage) {
   Price: ${serverMessage.msg.orderedPrice}</br>
 Ordered on: ${serverMessage.msg.orderedAT}.
     </p>
-   <p>Press 1 to make a new order</p>
+   press 99 to checkout order </br>
+   Press 1 to make a new order </br>
+   Press 10 to go back to the main menu
    </div>
    </div>`;
 

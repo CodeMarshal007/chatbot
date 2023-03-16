@@ -3,10 +3,9 @@ const path = require("path");
 
 const express = require("express");
 const session = require("express-session");
-// const MongoStore = require("connect-mongo")(session);
+const MongoStore = require("connect-mongo");
 const sharedsession = require("express-socket.io-session");
 const socketio = require("socket.io");
-const mongoose = require("mongoose");
 
 const CONFIG = require("./config");
 const connectToDB = require("./connectToDB");
@@ -18,41 +17,24 @@ const menuRouter = require("./routes/menu/menu.router");
 const PORT = CONFIG.PORT || 8000;
 
 const app = express();
-const db = connectToDB();
-
-// const sessionStore = new MongoStore({
-//   mongooseConnection: db,
-//   collection: "sessions",
-// });
+connectToDB();
 
 const server = http.createServer(app);
 const io = socketio(server);
+
+const sessionStore = MongoStore.create({ mongoUrl: CONFIG.MONGODB_URI });
 
 const sessionMiddleware = session({
   secret: CONFIG.SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: {
-    maxAge: 60 * 60 * 1000, // Session cookie will expire after 1 hour in milliseconds
+    maxAge: 10000, // Session cookie will expire after 1 hour in milliseconds
   },
-  // store: new MongoStore({ mongooseConnection: mongoose.connection }),
+  store: sessionStore,
 });
 
 app.use(sessionMiddleware);
-
-// Listen for the "destroy" event on the session store
-// const sessionStore = app.get("sessionStore");
-// sessionStore.on("destroy", (sessionId) => {
-//   // Remove session ID from Customer model
-//   Customer.deleteOne({ sessionId }, (err) => {
-//     if (err) console.error(err);
-//   });
-
-//   // Delete all orders associated with the session ID
-//   Order.deleteMany({ sessionId }, (err) => {
-//     if (err) console.error(err);
-//   });
-// });
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -61,19 +43,20 @@ app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Routes
 app.use("/", chatRouter);
 app.use("/menu", menuRouter);
 
 io.use(
   sharedsession(sessionMiddleware, {
     autoSave: true,
+    saveUninitialized: false,
   })
 );
 
-setTimeout(() => {}, 1000);
-
 io.on("connection", (socket) => {
   const sessionId = socket.handshake.session.id;
+
   let msg;
 
   socket.emit("welcome", utils.welcomeCustomer());
@@ -88,7 +71,6 @@ io.on("connection", (socket) => {
     socket.emit("customerMessage", utils.formatMessage("customer", message));
   });
 
-  //show menu
   socket.on("getMenu", async () => {
     const menu = await utils.getMenu();
     setTimeout(() => {
@@ -100,7 +82,6 @@ io.on("connection", (socket) => {
     const orderId = +orderNumber;
     const newOrder = await utils.newOrder(sessionId, orderId);
 
-    // look for the order and emit the name, price, time
     const createdOrder = await utils.findOrderById(
       sessionId,
       newOrder.orderedItem
@@ -141,7 +122,7 @@ io.on("connection", (socket) => {
     const history = orderHistory.orders.map((order) => {
       return order;
     });
-    console.log(history);
+
     setTimeout(() => {
       socket.emit("orderHistory", utils.formatMessage("Chatbot", history));
     }, 500);

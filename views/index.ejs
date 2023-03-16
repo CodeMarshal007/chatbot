@@ -5,33 +5,18 @@
     Take a big bite out of life at BigBite!
   </div>
   <div id="message-list">
-    <div class="chat-message chatbot">
-      <div class="message">
-        <p>welcome to our restaurant, what would you like</p>
-      </div>
-    </div>
-
-    <div class="chat-message cuustomer">
-      <div class="message">
-        <p>do you have some drinks</p>
-      </div>
-    </div>
-
-    <div class="chat-message chatbot">
-      <div class="message">
-        <p>Yes, of course, some coke?</p>
-      </div>
-    </div>
-
-    <div class="chat-message cuustomer">
-      <div class="message">
-        <p>sure</p>
-      </div>
-    </div>
+    <p id="date"><%=date%></p>
   </div>
+
   <form id="chat-form" action="/" method="post">
-    <input id="message-input" type="text" name="message" />
-    <button type="submit">Send</button>
+    <input
+      id="message-input"
+      type="text"
+      name="message"
+      autofocus
+      autocomplete="off"
+    />
+    <button type="submit"><i class="bi bi-send"></i></button>
   </form>
 </div>
 
