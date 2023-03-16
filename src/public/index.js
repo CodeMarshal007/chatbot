@@ -1,6 +1,9 @@
 const chatForm = document.querySelector("#chat-form");
 const chatScreen = document.getElementById("message-list");
 
+var myInput = document.getElementById("message-input");
+myInput.inputmode = "numeric";
+
 const socket = io();
 
 //**Event Listeners */
