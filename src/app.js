@@ -29,7 +29,7 @@ const sessionMiddleware = session({
   resave: false,
   saveUninitialized: true,
   cookie: {
-    maxAge: 10000, // Session cookie will expire after 1 hour in milliseconds
+    maxAge: 60 * 60 * 1000, // Session cookie will expire after 1 hour in milliseconds
   },
   store: sessionStore,
 });
