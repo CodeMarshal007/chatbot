@@ -53,12 +53,12 @@ body {
 
 .chat-message.chatbot .message {
   background-color: #dcf8c6;
-  align-self: flex-end;
+  align-self: flex-start;
 }
 
 .chat-message.customer .message {
   background-color: rgb(166, 194, 117);
-  align-self: flex-start;
+  align-self: flex-end;
 }
 
 .meta {
@@ -129,6 +129,6 @@ body {
     max-width: 100%;
     height: 100vh;
     border-radius: 0;
-    margin: 3px 0;
+    margin-top: 3px;
   }
 }
