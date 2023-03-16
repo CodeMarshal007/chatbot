@@ -1,6 +1,6 @@
 body {
   background-color: cornsilk;
-  font-family: cursive;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
 }
 
 .chat-container {
@@ -19,6 +19,7 @@ body {
   background-position: center;
   color: #ffffff;
   padding: 10px;
+  font-family: cursive;
 }
 
 .chat-header h1 {
@@ -81,16 +82,17 @@ body {
   padding: 10px;
   border: none;
   border-radius: 20px;
+  width: 95%;
   background-color: #f2f2f2;
 }
 
 #chat-form button {
-  margin-left: 10px;
+  margin: 0 10px;
   background-color: #f2f2f2;
   color: #25d366;
   border: none;
   border-radius: 50%;
-  width: 45px;
+  width: 3rem;
   height: 40px;
   display: flex;
   justify-content: center;
